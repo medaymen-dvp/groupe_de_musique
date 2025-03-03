@@ -2,20 +2,38 @@
 
 
 
-<div class="d-flex flex-column vh-10 ">
+<div class="d-flex flex-column vh-10">
   <div>
-    <label for="formFileLg" class="form-label">Choisir un fichier</label>
-    <input class="form-control form-control-lg" id="formFileLg" type="file"
-           (change)="onFileChange($event)" accept=".xlsx, .xls"
-    >
+    <form [formGroup]="myForm">
+      <label for="formFileLg" class="form-label">Choisir un fichier</label>
+      <input class="form-control form-control-lg" id="formFileLg" type="file" formControlName="file"
+             (change)="onFileChange($event)" accept=".xlsx, .xls">
 
-    <div *ngIf="excelData">
-      <button type="button" class="btn btn-primary">Primary</button>
+      <div *ngIf="excelData.length">
+        <div class="alert alert-danger" role="alert" *ngIf="dataTransfer === false">
+          erreur
+        </div>
+        <button type="button" class="btn btn-primary" (click)="sendData()" [disabled]="myForm.invalid">Envoyer</button>
+        <button type="reset" class="btn btn-secondary" *ngIf="excelData.length " (click)="vider()" [disabled]="myForm.invalid">Réinitialiser</button>
+      </div>
+    </form>
 
-      <h3>Uploaded Data:</h3>
+    <div *ngIf="excelData.length ">
+      <h3>Données téléchargées :</h3>
       <pre>{{ excelData | json }}</pre>
     </div>
   </div>
-
-
 </div>
+
+
+<div class="alert alert-success" role="alert" *ngIf="dataTransfer">
+  le fichier a ete envoyé avec succees
+</div>
+
+
+
+
+
+
+
+
