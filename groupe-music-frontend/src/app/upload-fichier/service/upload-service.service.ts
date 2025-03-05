@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
-export class DataService {
+export class UploadServiceService {
   constructor(private httpClient: HttpClient) {}
 
   // Méthode pour envoyer des données au backend
@@ -22,3 +22,4 @@ export class DataService {
     );
   }
 }
+

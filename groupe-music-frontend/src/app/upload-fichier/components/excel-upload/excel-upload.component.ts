@@ -1,17 +1,15 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as XLSX from 'xlsx';
-import {JsonPipe, NgIf} from '@angular/common';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {DataService} from '../../service/upload-service.service';
-import {Observable} from 'rxjs';
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-
+import { JsonPipe, NgIf } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { UploadServiceService } from '../../service/upload-service.service';
+import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-excel-upload',
   templateUrl: './excel-upload.component.html',
   imports: [
-
     NgIf,
     JsonPipe,
     ReactiveFormsModule
@@ -19,33 +17,29 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/
   styleUrls: ['./excel-upload.component.css']
 })
 export class ExcelUploadComponent implements OnInit {
-
   excelData: any[] = [];
   myForm: FormGroup;
   fileToUpload: File | null = null;
-  dataTransfer !: boolean | null;
+  dataTransfer: boolean | null = null;
 
-
-  constructor( private serviceFile: DataService, private http: HttpClient) {
-
+  constructor(private serviceFile: UploadServiceService, private http: HttpClient) {
     this.myForm = new FormGroup({
       file: new FormControl('', Validators.required),
     });
   }
-  ngOnInit(): void {
 
-  }
+  ngOnInit(): void {}
 
-
-  onFileChange(event: any) {
+  // Gestion du changement de fichier
+  onFileChange(event: any): void {
     const file = event.target.files[0];
     const reader = new FileReader();
 
     reader.onload = (e: any) => {
-      // Utiliser readAsArrayBuffer au lieu de readAsBinaryString
       const arrayBuffer = e.target.result;
       const workbook = XLSX.read(arrayBuffer, { type: 'array' });
 
+      // Lecture du premier onglet de la feuille
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
 
@@ -53,31 +47,27 @@ export class ExcelUploadComponent implements OnInit {
       this.excelData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
       console.log('Excel data:', this.excelData);
 
-      const file = event.target.files[0];
+      // Enregistrement du fichier pour un envoi ultérieur
       if (file) {
         this.fileToUpload = file;
       }
     };
 
-    reader.readAsArrayBuffer(file);  // Utiliser readAsArrayBuffer
+    reader.readAsArrayBuffer(file);  // Utilisation de readAsArrayBuffer
   }
 
+  // Extraction des clés (colonnes) de la première ligne du tableau
   getKeys(row: any): string[] {
     return Object.keys(row);
   }
 
-
-
-
-
-
-
-  sendData() {
+  // Envoi des données vers le backend
+  sendData(): void {
     this.serviceFile.sendDatatobackend(this.excelData).subscribe({
       next: (response: { message: string }) => {
         if (response && response.message) {
           console.log('Succès:', response.message);
-          this.vider(); // Vider les données après envoi
+          this.vider();  // Réinitialisation des données après envoi
           this.dataTransfer = true;
         }
       },
@@ -85,7 +75,7 @@ export class ExcelUploadComponent implements OnInit {
         console.error('Erreur dans la requête:', error);
         this.dataTransfer = false;
 
-        // Afficher un message d'erreur plus détaillé
+        // Affichage d'un message d'erreur détaillé
         if (error.error && error.error.message) {
           console.error('Message d\'erreur du backend:', error.error.message);
         }
@@ -93,13 +83,10 @@ export class ExcelUploadComponent implements OnInit {
     });
   }
 
-
-
-  vider() {
+  // Réinitialisation des données et du formulaire
+  vider(): void {
     this.excelData = [];
     this.myForm.reset();
-    this.dataTransfer=null;
-
+    this.dataTransfer = null;
   }
 }
-

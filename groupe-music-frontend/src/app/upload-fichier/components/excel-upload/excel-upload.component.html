@@ -1,39 +1,53 @@
-
-
-
-
 <div class="d-flex flex-column vh-10">
   <div>
+    <!-- Formulaire de téléchargement de fichier -->
     <form [formGroup]="myForm">
       <label for="formFileLg" class="form-label">Choisir un fichier</label>
-      <input class="form-control form-control-lg" id="formFileLg" type="file" formControlName="file"
-             (change)="onFileChange($event)" accept=".xlsx, .xls">
+      <input
+        class="form-control form-control-lg"
+        id="formFileLg"
+        type="file"
+        formControlName="file"
+        (change)="onFileChange($event)"
+        accept=".xlsx, .xls"
+      >
 
+      <!-- Affichage des boutons et alertes si des données sont présentes -->
       <div *ngIf="excelData.length">
         <div class="alert alert-danger" role="alert" *ngIf="dataTransfer === false">
-          erreur
+          Erreur lors du transfert
         </div>
-        <button type="button" class="btn btn-primary" (click)="sendData()" [disabled]="myForm.invalid">Envoyer</button>
-        <button type="reset" class="btn btn-secondary" *ngIf="excelData.length " (click)="vider()" [disabled]="myForm.invalid">Réinitialiser</button>
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="sendData()"
+          [disabled]="myForm.invalid"
+        >
+          Envoyer
+        </button>
+
+        <button
+          type="reset"
+          class="btn btn-secondary"
+          *ngIf="excelData.length"
+          (click)="vider()"
+          [disabled]="myForm.invalid"
+        >
+          Réinitialiser
+        </button>
       </div>
     </form>
 
-    <div *ngIf="excelData.length ">
+    <!-- Affichage des données téléchargées -->
+    <div *ngIf="excelData.length">
       <h3>Données téléchargées :</h3>
       <pre>{{ excelData | json }}</pre>
     </div>
   </div>
 </div>
 
-
+<!-- Notification de succès après l'envoi -->
 <div class="alert alert-success" role="alert" *ngIf="dataTransfer">
-  le fichier a ete envoyé avec succees
+  Le fichier a été envoyé avec succès
 </div>
-
-
-
-
-
-
-
-
