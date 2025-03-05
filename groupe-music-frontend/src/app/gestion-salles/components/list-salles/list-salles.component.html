@@ -1,0 +1,88 @@
+<p>List Salles - Fonctionne !</p>
+
+<!-- Boutons et Modal d'ajout -->
+<div class="button-model">
+  <!-- Bouton d'ajout de salle -->
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Ajouter Salle
+  </button>
+
+  <!-- Modal pour ajouter et éditer les salles -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Ajouter Salle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="salleForm" (ngSubmit)="addSalle()">
+            <div class="mb-3">
+              <label for="numero" class="col-form-label">Numéro de salle :</label>
+              <input type="number" class="form-control" id="numero" formControlName="numero">
+              <span *ngIf="salleForm.get('numero')?.invalid && salleForm.get('numero')?.touched">
+                ⚠ Numéro requis (minimum 1).
+              </span>
+            </div>
+            <div class="mb-3">
+              <label for="capacite" class="col-form-label">Capacité :</label>
+              <input type="number" class="form-control" id="capacite" formControlName="capacite" min="5" max="10000">
+              <span *ngIf="salleForm.get('capacite')?.invalid && salleForm.get('capacite')?.touched">
+                ⚠ Capacité requise (minimum 5).
+              </span>
+            </div>
+            <div class="mb-3">
+              <label for="description" class="col-form-label">Description :</label>
+              <input type="text" class="form-control" id="description" formControlName="description">
+              <span *ngIf="salleForm.get('description')?.invalid && salleForm.get('description')?.touched">
+                ⚠ La description doit contenir au moins 3 caractères.
+              </span>
+            </div>
+            <div class="modal-footer">
+              <button type="reset" class="btn btn-secondary" (click)="resetForm()">Réinitialiser</button>
+              <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="salleForm.invalid">
+                Ajouter
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loader -->
+<div class="spinner-border" role="status" *ngIf="loading$ | async">
+  <span class="visually-hidden">Chargement...</span>
+</div>
+
+<!-- Tableau des salles -->
+<table class="table">
+  <thead>
+  <tr>
+    <th scope="col">Numéro</th>
+    <th scope="col">Capacité</th>
+    <th scope="col">Description</th>
+    <th scope="col">Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <ng-container *ngIf="allSalle$ | async as salleitems">
+    <tr *ngFor="let salle of salleitems">
+      <td>{{ salle.numero }}</td>
+      <td>{{ salle.capacite }}</td>
+      <td>{{ salle.description }}</td>
+      <td>
+        <button type="button" class="btn btn-danger" (click)="deleteSalle(salle.id)">Supprimer</button>
+
+        <!-- Bouton d'édition pour chaque salle -->
+        <button (click)="goToSalleEdit(salle.id)" type="button" class="btn btn-warning">
+          Modifier Salle
+        </button>
+
+        <!-- Modal de modification de salle -->
+      </td>
+    </tr>
+  </ng-container>
+  </tbody>
+</table>
