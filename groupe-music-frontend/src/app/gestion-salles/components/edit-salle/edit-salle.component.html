@@ -1,0 +1,53 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-lg-6 col-md-8 col-12 mx-auto">
+      <div class="modal-body">
+        <!-- Utilisation de l'observable async -->
+        <div *ngIf="sale$ | async as salle">
+          <h2 class="text-center mb-4">Détails de la Salle</h2>
+          <p><strong>Numéro:</strong> {{ salle.numero }}</p>
+          <p><strong>Capacité:</strong> {{ salle.capacite }}</p>
+          <p><strong>Description:</strong> {{ salle.description }}</p>
+
+          <!-- Formulaire de modification de salle -->
+          <form [formGroup]="salleForm">
+            <div class="mb-3">
+              <label for="numero" class="form-label">Numéro de salle :</label>
+              <input type="number" class="form-control" id="numero"
+                     formControlName="numero" placeholder="Entrer le numéro de la salle" required>
+              <div *ngIf="salleForm.get('numero')?.invalid && salleForm.get('numero')?.touched" class="text-danger">
+                ⚠ Numéro requis (minimum 1).
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="capacite" class="form-label">Capacité :</label>
+              <input type="number" class="form-control" id="capacite"
+                     formControlName="capacite" min="5" max="10000" placeholder="Entrer la capacité de la salle" required>
+              <div *ngIf="salleForm.get('capacite')?.invalid && salleForm.get('capacite')?.touched" class="text-danger">
+                ⚠ Capacité requise (minimum 5).
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="description" class="form-label">Description :</label>
+              <input type="text" class="form-control" id="description"
+                     formControlName="description" placeholder="Entrer la description de la salle" required>
+              <div *ngIf="salleForm.get('description')?.invalid && salleForm.get('description')?.touched" class="text-danger">
+                ⚠ La description doit contenir au moins 3 caractères.
+              </div>
+            </div>
+
+            <div class="modal-footer d-flex justify-content-between">
+              <button type="reset" class="btn btn-secondary" (click)="goBack()">Annuler</button>
+              <button type="button" class="btn btn-primary" (click)="onEditSalle()" [disabled]="salleForm.invalid">
+                Modifier
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
